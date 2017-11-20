@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.mperever</groupId>
+    <artifactId>web-crawler-all</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>ts-common</module>
+        <module>ts-dal-mysql-hibernate</module>
+        <module>ts-web-rest</module>
+        <module>web-crawler-worker</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jackson.version>2.9.1</jackson.version>
+        <mysql-connector.version>6.0.6</mysql-connector.version>
+        <hibernate.version>5.2.12.Final</hibernate.version>
+        <h2.version>1.4.196</h2.version>
+        <jax-rs.version>2.1</jax-rs.version>
+        <jersey.version>2.26</jersey.version>
+        <jetty-client.version>9.4.7.v20170914</jetty-client.version>
+        <jsoup.version>1.10.3</jsoup.version>
+
+        <slf4j.version>1.7.25</slf4j.version>
+        <testng.version>6.11</testng.version>
+
+        <pmd.version>3.8</pmd.version>
+        <findbugs.plugin.version>3.0.5</findbugs.plugin.version>
+        <findbugs.version>3.0.1</findbugs.version>
+
+        <assembly.plugin.version>3.0.0</assembly.plugin.version>
+        <maven.war.plugin.version>3.2.0</maven.war.plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${findbugs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${findbugs.plugin.version}</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <xmlOutput>true</xmlOutput>
+                        <failOnError>true</failOnError>
+                        <includeTests>true</includeTests>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${pmd.version}</version>
+                    <configuration>
+                        <targetJdk>${maven.compiler.source}</targetJdk>
+                        <failurePriority>4</failurePriority>
+                        <verbose>true</verbose>
+                        <aggregate>true</aggregate>
+                        <includeTests>true</includeTests>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                                <goal>cpd-check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>mvnrepo</id>
+            <name>mvnrepo</name>
+            <url>http://mvnrepository.com/artifact</url>
+        </repository>
+    </repositories>
+
+</project>
