@@ -23,4 +23,4 @@ If crawler died or was stopped, another crawler instance must continue unfinishe
 
 Downloaded page must be parsed to separate words, so for every parsed page we need to save list of words and how many times they was used.
 
-Use Hibernate as ORM, microservice architecture and REST.
+Use JPA and Hibernate as ORM, microservice architecture and REST.
