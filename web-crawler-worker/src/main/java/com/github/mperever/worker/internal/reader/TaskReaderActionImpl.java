@@ -35,7 +35,8 @@ public class TaskReaderActionImpl implements TaskReaderAction
         final RetrieveTasksResponse tasksResponse = taskService.retrieveTasks( tasksRequest );
         if ( tasksResponse.hasError() )
         {
-            logger.error( tasksResponse.getError().getMessage() );
+            final Exception error = tasksResponse.getError();
+            logger.error( error.getMessage(), error );
             return new UrlTask[0];
         }
 

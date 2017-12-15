@@ -9,27 +9,43 @@ import com.github.mperever.common.dto.SaveTaskResultResponse;
 import com.github.mperever.common.json.JacksonJsonSerializer;
 import com.github.mperever.common.json.JsonSerializer;
 import com.github.mperever.dal.mysql.TaskServiceRepositoryMySql;
+import com.github.mperever.rest.internal.ArgumentsValidator;
+
+import java.lang.reflect.InvocationTargetException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.github.mperever.rest.HttpTaskService_v1.RESOURCE_MEDIA_TYPE;
+import static com.github.mperever.rest.HttpTaskService_v1.SERVICE_ROOT_PATH;
+
 /**
  * Represents a servlet for {@link TaskService_v1}.
  * The servlet uses default implementations: {@link TaskService_v1Impl} and {@link TaskServiceRepositoryMySql}.
+ *
+ * @author mperever
  */
-@Path( "/v1" )
+@Path( SERVICE_ROOT_PATH )
+@Consumes( RESOURCE_MEDIA_TYPE )
+@Produces( RESOURCE_MEDIA_TYPE )
 public class HttpTaskService_v1
 {
+    static final String RESOURCE_MEDIA_TYPE = MediaType.APPLICATION_JSON;
+    static final String SERVICE_ROOT_PATH = "/v1";
+    static final String TASKS_RETRIEVE_PATH = "tasks.retrieve";
+    static final String RESULTS_SAVE_PATH = "results.save";
+
     private static final Logger logger = LoggerFactory.getLogger( HttpTaskService_v1.class );
 
-    private static final String RESOURCE_MEDIA_TYPE = MediaType.APPLICATION_JSON;
     private final static String REQUEST_BODY_MISSING_TEMPLATE = "Could not %s to request body is not specified";
 
     private final TaskService_v1 taskService;
@@ -43,7 +59,7 @@ public class HttpTaskService_v1
     HttpTaskService_v1( TaskService_v1 taskService )
     {
         this.taskService = taskService;
-        this.jsonSerializer = new JacksonJsonSerializer();
+        jsonSerializer = new JacksonJsonSerializer();
     }
 
     public HttpTaskService_v1()
@@ -52,24 +68,18 @@ public class HttpTaskService_v1
     }
 
     @POST
-    @Path( "tasks.retrieve" )
-    @Consumes( RESOURCE_MEDIA_TYPE )
-    @Produces( RESOURCE_MEDIA_TYPE )
-    public Response tasksRetrieve( final String jsonRetrieveRequest )
+    @Path( TASKS_RETRIEVE_PATH )
+    public Response tasksRetrieve( @Context HttpHeaders headers, final RetrieveTasksRequest retrieveRequest )
     {
-        if ( jsonRetrieveRequest == null || jsonRetrieveRequest.isEmpty() )
+        final String errorMessage = validateRetrieveRequest( retrieveRequest );
+        if ( !errorMessage.isEmpty() )
         {
-            return this.buildRetrieveErrorParameterResponse(
-                    String.format( REQUEST_BODY_MISSING_TEMPLATE, "retrieve tasks" ) );
+            return buildErrorParameterResponse( RetrieveTasksResponse.class, errorMessage );
         }
 
         try
         {
-            final RetrieveTasksRequest request = jsonSerializer.decode(
-                    jsonRetrieveRequest,
-                    RetrieveTasksRequest.class );
-
-            final RetrieveTasksResponse response = taskService.retrieveTasks( request );
+            final RetrieveTasksResponse response = taskService.retrieveTasks( retrieveRequest );
             final String jsonResponse = jsonSerializer.encode( response );
 
             return Response.ok( jsonResponse, RESOURCE_MEDIA_TYPE ).build();
@@ -80,25 +90,34 @@ public class HttpTaskService_v1
         }
     }
 
-    @POST
-    @Path( "results.save" )
-    @Consumes( RESOURCE_MEDIA_TYPE )
-    @Produces( RESOURCE_MEDIA_TYPE )
-    public Response resultsSave( final String jsonSaveResultRequest )
+    private String validateRetrieveRequest( final RetrieveTasksRequest request )
     {
-        if ( jsonSaveResultRequest == null || jsonSaveResultRequest.isEmpty() )
+        if ( request == null )
         {
-            return this.buildSaveResultsErrorParameterResponse(
-                    String.format( REQUEST_BODY_MISSING_TEMPLATE, "save task results" ) );
+            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "retrieve tasks" );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .numberPositive( request.getMaxCount(), "maxCount" )
+                .numberNotNegative( request.getDepthLimit(), "depthLimit" );
+
+        return validationResultsToString( requestValidator.validate() );
+    }
+
+    @POST
+    @Path( RESULTS_SAVE_PATH )
+    public Response resultsSave( @Context HttpHeaders headers, final SaveTaskResultRequest saveResultRequest )
+    {
+        final String errorMessage = validateSaveResultRequest( saveResultRequest );
+        if ( !errorMessage.isEmpty() )
+        {
+            return buildErrorParameterResponse( SaveTaskResultResponse.class, errorMessage );
         }
 
         try
         {
-            final SaveTaskResultRequest request = this.jsonSerializer.decode(
-                    jsonSaveResultRequest,
-                    SaveTaskResultRequest.class );
-
-            final SaveTaskResultResponse response = taskService.saveTaskResults( request );
+            final SaveTaskResultResponse response = taskService.saveTaskResults( saveResultRequest );
 
             if ( response.hasError() )
             {
@@ -114,21 +133,55 @@ public class HttpTaskService_v1
         }
     }
 
-    private Response buildSaveResultsErrorParameterResponse( final String message )
+    private String validateSaveResultRequest( final SaveTaskResultRequest request )
     {
-        return buildErrorParameterResponse( new SaveTaskResultResponse(
-                new IllegalArgumentException( message ) ) );
+        if ( request == null )
+        {
+            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "save task results" );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .notEmpty( request.getUrl(), "url" );
+
+        if ( request.getError() == null )
+        {
+            requestValidator.notNull( request.getTaskResults(), "taskResults" );
+        }
+
+        return validationResultsToString( requestValidator.validate() );
     }
 
-    private Response buildRetrieveErrorParameterResponse( final String message )
+    private String validationResultsToString( String[] errors )
     {
-        return buildErrorParameterResponse( new RetrieveTasksResponse(
-                new IllegalArgumentException( message ) ) );
+        return String.join( ";", errors );
+    }
+
+    private Response buildErrorParameterResponse( final Class<? extends ErrorKeeper> responseType,
+                                                  final String errorMessage )
+    {
+        final ErrorKeeper responseInstance;
+        try
+        {
+            responseInstance = responseType
+                    .getConstructor( Exception.class )
+                    .newInstance( new IllegalArgumentException( errorMessage ) );
+
+        } catch ( InstantiationException
+                | IllegalAccessException
+                | InvocationTargetException
+                | NoSuchMethodException ex )
+        {
+            throw new IllegalStateException( ex );
+        }
+
+        return buildErrorParameterResponse( responseInstance );
     }
 
     private Response buildErrorParameterResponse( final ErrorKeeper responseEntity )
     {
-        logger.error( responseEntity.getError().getMessage() );
+        final Exception error = responseEntity.getError();
+        logger.error( error.getMessage(), error );
 
         final String jsonResponse = this.jsonSerializer.encode( responseEntity );
         return Response.status( Response.Status.BAD_REQUEST )
@@ -138,7 +191,8 @@ public class HttpTaskService_v1
 
     private Response buildExceptionResponse( final ErrorKeeper responseEntity )
     {
-        logger.error( responseEntity.getError().getMessage() );
+        final Exception error = responseEntity.getError();
+        logger.error( error.getMessage(), error );
 
         final String jsonResponse = this.jsonSerializer.encode( responseEntity );
         return Response.serverError()

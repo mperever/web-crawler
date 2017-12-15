@@ -10,7 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <description>MySQL with Hibernate implementation of task service data access layer</description>
+    <description>MySQL with Hibernate JPA implementation of task service data access layer</description>
     <artifactId>ts-dal-mysql-hibernate</artifactId>
     <packaging>jar</packaging>
 
@@ -24,6 +24,11 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
         <!--MySQL DB connector and DB Connection pool-->

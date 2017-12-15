@@ -1,7 +1,5 @@
 package com.github.mperever.common.dto;
 
-import com.github.mperever.common.utils.ArgumentChecker;
-
 import java.io.Serializable;
 
 /**
@@ -26,10 +24,6 @@ public class RetrieveTasksRequest implements Serializable
 
     public RetrieveTasksRequest( String clientId, int maxCount, int depthLimit )
     {
-        ArgumentChecker.checkNotEmpty( clientId, "clientId" );
-        ArgumentChecker.checkNumberGreaterZero( maxCount, "maxCount" );
-        ArgumentChecker.checkNumberPositive( depthLimit, "depthLimit" );
-
         this.clientId = clientId;
         this.maxCount = maxCount;
         this.depthLimit = depthLimit;

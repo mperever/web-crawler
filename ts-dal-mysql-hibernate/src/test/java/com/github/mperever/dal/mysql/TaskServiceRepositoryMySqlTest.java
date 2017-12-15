@@ -14,7 +14,9 @@ import org.testng.annotations.Test;
 
 public class TaskServiceRepositoryMySqlTest
 {
-    private final TaskServiceRepositoryMySql repo = new TaskServiceRepositoryMySql();
+    private final TaskServiceRepositoryMySql repo = new TaskServiceRepositoryMySql(
+            javax.persistence.Persistence.createEntityManagerFactory( "hibernateH2" )
+    );
 
     @Test
     public void get_tasks_for_client()

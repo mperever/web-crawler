@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents implementation for {@link TaskService_v1}.
+ *
+ * @author mperever
  */
 public class TaskService_v1Impl implements TaskService_v1
 {
@@ -117,7 +119,7 @@ public class TaskService_v1Impl implements TaskService_v1
         }
     }
 
-    private void saveTaskResults( final UrlTask task, final TaskResults results ) throws Exception
+    private void saveTaskResults( final UrlTask task, final TaskResults results )
     {
         final UrlTask[] newTasks = createTasks( task, results.getNewUrls() );
 
@@ -128,9 +130,10 @@ public class TaskService_v1Impl implements TaskService_v1
         // Add page text and words stats to save
         final String pageText = results.getPageText();
         final Map<String, Long> wordsStats = results.getWordsStats();
-        final boolean isSavePageTextStats = (
-                ( pageText != null && !pageText.isEmpty() )
-                || ( wordsStats != null && !wordsStats.isEmpty() ) );
+        final boolean isPageTextPresent = pageText != null && !pageText.isEmpty();
+        final boolean isWordStatsPresent = wordsStats != null && !wordsStats.isEmpty();
+        final boolean isSavePageTextStats = isPageTextPresent || isWordStatsPresent;
+
         if ( isSavePageTextStats )
         {
             final TaskPageTextStats pageTextStats = new TaskPageTextStats( task.getId() );

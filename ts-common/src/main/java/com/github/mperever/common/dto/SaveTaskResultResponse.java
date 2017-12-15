@@ -1,13 +1,11 @@
 package com.github.mperever.common.dto;
 
-import java.io.Serializable;
-
 /**
  * Represents response for {@link SaveTaskResultRequest}.
  *
  * @author mperever
  */
-public class SaveTaskResultResponse implements Serializable, ErrorKeeper
+public class SaveTaskResultResponse implements ErrorKeeper
 {
     private static final long serialVersionUID = 1L;
 
@@ -22,11 +20,13 @@ public class SaveTaskResultResponse implements Serializable, ErrorKeeper
         this.error = error;
     }
 
+    @Override
     public boolean hasError()
     {
         return error != null;
     }
 
+    @Override
     public Exception getError()
     {
         return error;

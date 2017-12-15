@@ -4,10 +4,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.github.mperever.common.utils.ArgumentChecker.checkNotEmpty;
-import static com.github.mperever.common.utils.ArgumentChecker.checkNotNull;
-import static com.github.mperever.common.utils.ArgumentChecker.checkNumberPositive;
-
 /**
  * Represents task for processing URL.
  *
@@ -36,9 +32,6 @@ public class UrlTask implements Serializable
 
     public UrlTask( Integer parentId, String url, int depth, boolean external )
     {
-        checkNotEmpty( url, "url" );
-        checkNumberPositive( depth, "depth" );
-
         this.parentId = parentId;
         this.url = url;
         this.depth = depth;
@@ -47,8 +40,6 @@ public class UrlTask implements Serializable
 
     public UrlTask( UrlTask parent, String url ) throws URISyntaxException
     {
-        checkNotNull( parent, "parent" );
-
         final URI parentUrl = new URI( parent.getUrl() );
         final URI taskUrl = new URI( url );
 

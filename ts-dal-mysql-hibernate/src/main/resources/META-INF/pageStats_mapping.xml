@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+                 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+                 version="2.1">
+    <entity class="com.github.mperever.common.dal.TaskPageTextStats" name="TaskPageTextStats">
+        <table name="PageText"/>
+        <attributes>
+            <id name="taskId"/>
+
+            <basic name="pageText">
+                <column name="text" length="20000" nullable="false"/>
+            </basic>
+
+            <element-collection name="wordStats" fetch="LAZY">
+                <map-key-column name="word"/>
+                <column name="count"/>
+                <collection-table name="WordStats"/>
+            </element-collection>
+        </attributes>
+    </entity>
+</entity-mappings>

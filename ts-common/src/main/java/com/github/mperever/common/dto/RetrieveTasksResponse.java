@@ -2,15 +2,13 @@ package com.github.mperever.common.dto;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import java.io.Serializable;
-
 /**
  * Represents response for {@link RetrieveTasksRequest}.
  *
  * @author mperever
  */
 @SuppressFBWarnings( { "EI_EXPOSE_REP" } )
-public class RetrieveTasksResponse implements Serializable, ErrorKeeper
+public class RetrieveTasksResponse implements ErrorKeeper
 {
     private static final long serialVersionUID = 1L;
 
@@ -34,18 +32,21 @@ public class RetrieveTasksResponse implements Serializable, ErrorKeeper
         this.tasks = tasks;
     }
 
+
+    public UrlTask[] getTasks()
+    {
+        return tasks;
+    }
+
+    @Override
     public boolean hasError()
     {
         return error != null;
     }
 
+    @Override
     public Exception getError()
     {
         return error;
-    }
-
-    public UrlTask[] getTasks()
-    {
-        return tasks;
     }
 }
