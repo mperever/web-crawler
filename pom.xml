@@ -10,9 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>ts-common</module>
-        <module>ts-dal-mysql-hibernate</module>
-        <module>ts-web-rest</module>
+        <module>task-service</module>
         <module>web-crawler-worker</module>
     </modules>
 
