@@ -4,7 +4,7 @@
                  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
                  http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
                  version="2.1">
-    <entity class="com.github.mperever.common.dto.UrlTask" name="UrlTask">
+    <entity class="com.github.mperever.web.crawler.ts.common.dto.UrlTask" name="UrlTask">
         <table name="Tasks"/>
         <attributes>
             <id name="id">

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.mperever</groupId>
+        <groupId>com.github.mperever.web.crawler</groupId>
         <artifactId>web-crawler-all</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
