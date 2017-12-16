@@ -30,12 +30,20 @@ public class TaskServiceMock implements TaskService_v1
     @Override
     public RetrieveTasksResponse retrieveTasks( RetrieveTasksRequest request )
     {
+        if ( request == null )
+        {
+            throw new IllegalArgumentException();
+        }
         return getResponse( request.getClientId(), RetrieveTasksResponse.class );
     }
 
     @Override
     public SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request )
     {
+        if ( request == null )
+        {
+            throw new IllegalArgumentException();
+        }
         return getResponse( request.getClientId(), SaveTaskResultResponse.class );
     }
 

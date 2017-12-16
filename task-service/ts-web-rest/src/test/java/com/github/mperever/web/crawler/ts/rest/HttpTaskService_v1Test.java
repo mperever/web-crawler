@@ -111,19 +111,15 @@ public class HttpTaskService_v1Test extends JerseyTestNg.ContainerPerClassTest
     @Test
     public void tasksRetrieve_should_return_validation_error_for_missing_request_fields()
     {
-        final RetrieveTasksRequest request = new RetrieveTasksRequest( null, 0, 0 );
-
-        final Response serviceResponse = target( HttpTaskService_v1.SERVICE_ROOT_PATH ).path( HttpTaskService_v1.TASKS_RETRIEVE_PATH )
+        final Response serviceResponse = target( HttpTaskService_v1.SERVICE_ROOT_PATH )
+                .path( HttpTaskService_v1.TASKS_RETRIEVE_PATH )
                 .request()
-                .post( Entity.entity( request, HttpTaskService_v1.RESOURCE_MEDIA_TYPE ) );
+                .post( Entity.entity( null, HttpTaskService_v1.RESOURCE_MEDIA_TYPE ) );
 
         Assert.assertEquals( serviceResponse.getStatus(), Response.Status.BAD_REQUEST.getStatusCode() );
         final RetrieveTasksResponse actualResponse = serviceResponse.readEntity( RetrieveTasksResponse.class );
         final Exception actualError = actualResponse.getError();
         Assert.assertNotNull( actualError );
-        final String errorMessage = actualError.getMessage();
-        assertThat( errorMessage, containsString( "clientId" ) );
-        assertThat( errorMessage, containsString( "maxCount" ) );
     }
 
     @Test
@@ -189,20 +185,14 @@ public class HttpTaskService_v1Test extends JerseyTestNg.ContainerPerClassTest
     @Test
     public void resultsSave_should_return_validation_error_for_missing_request_fields()
     {
-        final TaskResults taskResults = null;
-        final SaveTaskResultRequest request = new SaveTaskResultRequest( null, null, taskResults );
-
-        final Response serviceResponse = target( HttpTaskService_v1.SERVICE_ROOT_PATH ).path( HttpTaskService_v1.RESULTS_SAVE_PATH )
+        final Response serviceResponse = target( HttpTaskService_v1.SERVICE_ROOT_PATH )
+                .path( HttpTaskService_v1.RESULTS_SAVE_PATH )
                 .request()
-                .post( Entity.entity( request, HttpTaskService_v1.RESOURCE_MEDIA_TYPE ) );
+                .post( Entity.entity( null, HttpTaskService_v1.RESOURCE_MEDIA_TYPE ) );
 
         Assert.assertEquals( serviceResponse.getStatus(), Response.Status.BAD_REQUEST.getStatusCode() );
         final SaveTaskResultResponse actualResponse = serviceResponse.readEntity( SaveTaskResultResponse.class );
         final Exception actualError = actualResponse.getError();
         Assert.assertNotNull( actualError );
-        final String errorMessage = actualError.getMessage();
-        assertThat( errorMessage, containsString( "clientId" ) );
-        assertThat( errorMessage, containsString( "url" ) );
-        assertThat( errorMessage, containsString( "taskResults" ) );
     }
 }

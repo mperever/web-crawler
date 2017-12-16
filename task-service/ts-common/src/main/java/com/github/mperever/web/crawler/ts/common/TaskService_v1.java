@@ -17,6 +17,7 @@ public interface TaskService_v1
      *
      * @param request The request from client to retrieve tasks
      * @return Response with tasks for client OR error
+     * @throws IllegalArgumentException if request parameters is not valid
      */
     RetrieveTasksResponse retrieveTasks( RetrieveTasksRequest request );
 
@@ -25,6 +26,7 @@ public interface TaskService_v1
      *
      * @param request The request from client to save task results.
      * @return Response with result of task saving.
+     * @throws IllegalArgumentException if request parameters is not valid
      */
     SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request );
 }

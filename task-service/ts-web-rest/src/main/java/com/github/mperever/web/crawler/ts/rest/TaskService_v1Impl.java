@@ -10,6 +10,7 @@ import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.common.dto.TaskResults;
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
+import com.github.mperever.web.crawler.ts.rest.internal.ArgumentsValidator;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -29,39 +30,46 @@ public class TaskService_v1Impl implements TaskService_v1
 {
     private static final Logger logger = LoggerFactory.getLogger( TaskService_v1Impl.class );
 
-    private final static long DEFAULT_TASK_STAGE_TIMEOUT = TimeUnit.SECONDS.toMillis( 60 );
+    private final static long DEFAULT_TASK_PROCESSING_TIMEOUT = TimeUnit.SECONDS.toMillis( 60 );
     private final static int DEFAULT_TASK_ERROR_THRESHOLD = 5;
+    private final static String REQUEST_BODY_MISSING_TEMPLATE = "Could not perform '%s', request body is not specified";
 
     private final TaskServiceRepository repository;
-    private final long taskStageTimeoutMs;
+    private final long taskProcessingTimeoutMs;
     private final int taskErrorThreshold;
 
     public TaskService_v1Impl( TaskServiceRepository repository )
     {
         this.repository = repository;
-        this.taskStageTimeoutMs = DEFAULT_TASK_STAGE_TIMEOUT;
+        this.taskProcessingTimeoutMs = DEFAULT_TASK_PROCESSING_TIMEOUT;
         this.taskErrorThreshold = DEFAULT_TASK_ERROR_THRESHOLD;
     }
 
     public TaskService_v1Impl( TaskServiceRepository repository,
-                               long taskStageTimeoutMs,
+                               long taskProcessingTimeoutMs,
                                int taskErrorThreshold )
     {
         this.repository = repository;
-        this.taskStageTimeoutMs = taskStageTimeoutMs;
+        this.taskProcessingTimeoutMs = taskProcessingTimeoutMs;
         this.taskErrorThreshold = taskErrorThreshold;
     }
 
     @Override
     public RetrieveTasksResponse retrieveTasks( final RetrieveTasksRequest request )
     {
+        final String errorMessage = validateRetrieveRequest( request );
+        if ( !errorMessage.isEmpty() )
+        {
+            throw new IllegalArgumentException( errorMessage );
+        }
+
         try
         {
             final UrlTask[] tasks = repository.getTasksForClient(
                     request.getClientId(),
                     request.getMaxCount(),
                     request.getDepthLimit(),
-                    taskStageTimeoutMs,
+                    taskProcessingTimeoutMs,
                     taskErrorThreshold );
 
             return new RetrieveTasksResponse( tasks );
@@ -73,9 +81,30 @@ public class TaskService_v1Impl implements TaskService_v1
         }
     }
 
+    private String validateRetrieveRequest( final RetrieveTasksRequest request )
+    {
+        if ( request == null )
+        {
+            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "retrieve tasks" );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .numberPositive( request.getMaxCount(), "maxCount" )
+                .numberNotNegative( request.getDepthLimit(), "depthLimit" );
+
+        return validationResultsToString( requestValidator.validate() );
+    }
+
     @Override
     public SaveTaskResultResponse saveTaskResults( final SaveTaskResultRequest request )
     {
+        final String errorMessage = validateSaveResultRequest( request );
+        if ( !errorMessage.isEmpty() )
+        {
+            throw new IllegalArgumentException( errorMessage );
+        }
+
         final String url = request.getUrl();
 
         try
@@ -117,6 +146,30 @@ public class TaskService_v1Impl implements TaskService_v1
             logger.error(  ex.getMessage(), ex );
             return new SaveTaskResultResponse( ex );
         }
+    }
+
+    private String validateSaveResultRequest( final SaveTaskResultRequest request )
+    {
+        if ( request == null )
+        {
+            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "save task results" );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .notEmpty( request.getUrl(), "url" );
+
+        if ( request.getError() == null )
+        {
+            requestValidator.notNull( request.getTaskResults(), "taskResults" );
+        }
+
+        return validationResultsToString( requestValidator.validate() );
+    }
+
+    private static String validationResultsToString( String[] errors )
+    {
+        return String.join( ", ", errors );
     }
 
     private void saveTaskResults( final UrlTask task, final TaskResults results )
