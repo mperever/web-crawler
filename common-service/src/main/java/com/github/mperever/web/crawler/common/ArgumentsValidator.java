@@ -1,4 +1,4 @@
-package com.github.mperever.web.crawler.ts.rest.internal;
+package com.github.mperever.web.crawler.common;
 
 import java.util.HashSet;
 import java.util.Set;

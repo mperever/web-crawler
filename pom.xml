@@ -12,6 +12,7 @@
     <modules>
         <module>common-service</module>
         <module>task-service</module>
+        <module>auth-service</module>
         <module>web-crawler-worker</module>
     </modules>
 
@@ -27,6 +28,7 @@
         <jetty-client.version>9.4.8.v20171121</jetty-client.version>
         <jsoup.version>1.11.2</jsoup.version>
         <jackson.version>2.9.3</jackson.version>
+        <jjwt.version>0.6.0</jjwt.version>
 
         <slf4j.version>1.7.25</slf4j.version>
         <testng.version>6.11</testng.version>

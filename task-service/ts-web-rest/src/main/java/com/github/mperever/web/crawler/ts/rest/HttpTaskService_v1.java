@@ -74,10 +74,6 @@ public class HttpTaskService_v1
 
             return Response.ok( jsonResponse, RESOURCE_MEDIA_TYPE ).build();
         }
-        catch ( IllegalArgumentException ex )
-        {
-            return buildErrorParameterResponse( new RetrieveTasksResponse( ex ) );
-        }
         catch ( Exception ex )
         {
             return buildExceptionResponse( new RetrieveTasksResponse( ex ) );
@@ -100,26 +96,10 @@ public class HttpTaskService_v1
             final String jsonResponse = jsonSerializer.encode( response );
             return Response.ok( jsonResponse, RESOURCE_MEDIA_TYPE ).build();
         }
-        catch ( IllegalArgumentException ex )
-        {
-            return buildErrorParameterResponse( new SaveTaskResultResponse( ex ) );
-        }
         catch ( Exception ex )
         {
             return buildExceptionResponse( new SaveTaskResultResponse( ex ) );
         }
-    }
-
-    private Response buildErrorParameterResponse( final ErrorKeeper responseEntity )
-    {
-        final Exception error = responseEntity.getError();
-        logger.error( error.getMessage(), error );
-
-        final String jsonResponse = jsonSerializer.encode( responseEntity );
-
-        return Response.status( Response.Status.BAD_REQUEST )
-                .type( RESOURCE_MEDIA_TYPE )
-                .entity( jsonResponse ).build();
     }
 
     private Response buildExceptionResponse( final ErrorKeeper responseEntity )
@@ -129,9 +109,20 @@ public class HttpTaskService_v1
 
         final String jsonResponse = jsonSerializer.encode( responseEntity );
 
-        return Response.serverError()
+        return Response.status( getErrorResponseStatus( error ) )
                 .type( RESOURCE_MEDIA_TYPE )
                 .entity( jsonResponse )
                 .build();
+    }
+
+    private Response.Status getErrorResponseStatus( final Exception error )
+    {
+        final Class errorType = error.getClass();
+        if ( errorType.equals( IllegalArgumentException.class ) )
+        {
+            return Response.Status.BAD_REQUEST;
+        }
+
+        return Response.Status.INTERNAL_SERVER_ERROR;
     }
 }

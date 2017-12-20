@@ -10,7 +10,7 @@ import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.common.dto.TaskResults;
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
-import com.github.mperever.web.crawler.ts.rest.internal.ArgumentsValidator;
+import com.github.mperever.web.crawler.common.ArgumentsValidator;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -55,13 +55,9 @@ public class TaskService_v1Impl implements TaskService_v1
     }
 
     @Override
-    public RetrieveTasksResponse retrieveTasks( final RetrieveTasksRequest request )
+    public RetrieveTasksResponse retrieveTasks( final RetrieveTasksRequest request ) throws IllegalArgumentException
     {
-        final String errorMessage = validateRetrieveRequest( request );
-        if ( !errorMessage.isEmpty() )
-        {
-            throw new IllegalArgumentException( errorMessage );
-        }
+        checkRetrieveRequest( request );
 
         try
         {
@@ -81,56 +77,33 @@ public class TaskService_v1Impl implements TaskService_v1
         }
     }
 
-    private String validateRetrieveRequest( final RetrieveTasksRequest request )
-    {
-        if ( request == null )
-        {
-            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "retrieve tasks" );
-        }
-
-        final ArgumentsValidator requestValidator = new ArgumentsValidator()
-                .notEmpty( request.getClientId(), "clientId" )
-                .numberPositive( request.getMaxCount(), "maxCount" )
-                .numberNotNegative( request.getDepthLimit(), "depthLimit" );
-
-        return validationResultsToString( requestValidator.validate() );
-    }
-
     @Override
-    public SaveTaskResultResponse saveTaskResults( final SaveTaskResultRequest request )
+    public SaveTaskResultResponse saveTaskResults( final SaveTaskResultRequest request ) throws IllegalArgumentException
     {
-        final String errorMessage = validateSaveResultRequest( request );
-        if ( !errorMessage.isEmpty() )
-        {
-            throw new IllegalArgumentException( errorMessage );
-        }
-
-        final String url = request.getUrl();
+        checkSaveResultRequest( request );
 
         try
         {
+            final String url = request.getUrl();
             final UrlTask task = repository.getTask( url );
             if ( task == null )
             {
-                throw new NullPointerException( "Could not find task by url: " + url );
+                throw new IllegalArgumentException( "Could not find task by url: " + url );
             }
 
             final SaveTaskResultResponse successResponse = new SaveTaskResultResponse();
-
             boolean isTaskAssignToClient = request.getClientId().equals( task.getClientId() );
             if ( !isTaskAssignToClient )
             {
-                logger.warn(
-                        "Task results from client '{}' are not saved. "
-                        + "The task {} was re-assign to another client", request.getClientId(), task );
+                logger.warn( "Task results from client '{}' are not saved. "
+                             + "The task {} was re-assign to another client", request.getClientId(), task );
                 return successResponse;
             }
 
             if ( request.hasError() )
             {
-                logger.debug(
-                        "Task results are not saved. "
-                        + "The client '{}' returned error: {}", request.getClientId(), request.getError() );
+                logger.debug( "Task results are not saved. "
+                              + "The client '{}' returned error: {}", request.getClientId(), request.getError() );
                 repository.updateErrorCount( task.getUrl(), task.getErrorCount() + 1 );
 
                 return successResponse;
@@ -146,30 +119,6 @@ public class TaskService_v1Impl implements TaskService_v1
             logger.error(  ex.getMessage(), ex );
             return new SaveTaskResultResponse( ex );
         }
-    }
-
-    private String validateSaveResultRequest( final SaveTaskResultRequest request )
-    {
-        if ( request == null )
-        {
-            return String.format( REQUEST_BODY_MISSING_TEMPLATE, "save task results" );
-        }
-
-        final ArgumentsValidator requestValidator = new ArgumentsValidator()
-                .notEmpty( request.getClientId(), "clientId" )
-                .notEmpty( request.getUrl(), "url" );
-
-        if ( request.getError() == null )
-        {
-            requestValidator.notNull( request.getTaskResults(), "taskResults" );
-        }
-
-        return validationResultsToString( requestValidator.validate() );
-    }
-
-    private static String validationResultsToString( String[] errors )
-    {
-        return String.join( ", ", errors );
     }
 
     private void saveTaskResults( final UrlTask task, final TaskResults results )
@@ -199,7 +148,7 @@ public class TaskService_v1Impl implements TaskService_v1
         repository.saveTaskResults( resultsToSave );
     }
 
-    private UrlTask[] createTasks( final UrlTask task, final String[] urls )
+    private static UrlTask[] createTasks( final UrlTask parentTask, final String[] urls )
     {
         if ( urls == null || urls.length == 0 )
         {
@@ -211,7 +160,7 @@ public class TaskService_v1Impl implements TaskService_v1
         {
             try
             {
-                tasks.add( new UrlTask( task, url ) );
+                tasks.add( new UrlTask( parentTask, url ) );
 
             } catch ( URISyntaxException ex )
             {
@@ -219,6 +168,49 @@ public class TaskService_v1Impl implements TaskService_v1
             }
         }
 
-        return tasks.toArray( new UrlTask[tasks.size()] );
+        return tasks.toArray( new UrlTask[ tasks.size() ] );
+    }
+
+    private static void checkRetrieveRequest( final RetrieveTasksRequest request ) throws IllegalArgumentException
+    {
+        if ( request == null )
+        {
+            throw new IllegalArgumentException( String.format( REQUEST_BODY_MISSING_TEMPLATE, "retrieve tasks" ) );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .numberPositive( request.getMaxCount(), "maxCount" )
+                .numberNotNegative( request.getDepthLimit(), "depthLimit" );
+
+        checkRequestArguments( requestValidator );
+    }
+
+    private static void checkSaveResultRequest( final SaveTaskResultRequest request ) throws IllegalArgumentException
+    {
+        if ( request == null )
+        {
+            throw new IllegalArgumentException( String.format( REQUEST_BODY_MISSING_TEMPLATE, "save task results" ) );
+        }
+
+        final ArgumentsValidator requestValidator = new ArgumentsValidator()
+                .notEmpty( request.getClientId(), "clientId" )
+                .notEmpty( request.getUrl(), "url" );
+
+        if ( request.getError() == null )
+        {
+            requestValidator.notNull( request.getTaskResults(), "taskResults" );
+        }
+
+        checkRequestArguments( requestValidator );
+    }
+
+    private static void checkRequestArguments( final ArgumentsValidator validator ) throws IllegalArgumentException
+    {
+        final String errorMessage = String.join( ", ", validator.validate() );
+        if ( !errorMessage.isEmpty() )
+        {
+            throw new IllegalArgumentException( errorMessage );
+        }
     }
 }

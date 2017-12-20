@@ -86,7 +86,7 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
         {
             byUrls.add( builder.equal( tasksRoot.get( UrlTask_.url ), task.getUrl() ) );
         }
-        final Predicate byOrUrls = builder.or( byUrls.toArray( new Predicate[byUrls.size()] ) );
+        final Predicate byOrUrls = builder.or( byUrls.toArray( new Predicate[ byUrls.size() ] ) );
 
         // Create and run query based on search selectCriteria
         selectCriteria.select( tasksRoot )

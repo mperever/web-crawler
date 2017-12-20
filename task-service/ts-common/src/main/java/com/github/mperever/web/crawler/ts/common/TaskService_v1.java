@@ -19,7 +19,7 @@ public interface TaskService_v1
      * @return Response with tasks for client OR error
      * @throws IllegalArgumentException if request parameters are not valid
      */
-    RetrieveTasksResponse retrieveTasks( RetrieveTasksRequest request );
+    RetrieveTasksResponse retrieveTasks( RetrieveTasksRequest request ) throws IllegalArgumentException;
 
     /**
      * Saves task results.
@@ -28,5 +28,5 @@ public interface TaskService_v1
      * @return Response with result of task saving.
      * @throws IllegalArgumentException if request parameters are not valid
      */
-    SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request );
+    SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request ) throws IllegalArgumentException;
 }
