@@ -1,12 +1,13 @@
 package com.github.mperever.web.crawler.worker.http;
 
+import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
+import com.github.mperever.web.crawler.common.json.JsonSerializer;
+
 import com.github.mperever.web.crawler.ts.common.TaskService_v1;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
-import com.github.mperever.web.crawler.ts.common.json.JacksonJsonSerializer;
-import com.github.mperever.web.crawler.ts.common.json.JsonSerializer;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;

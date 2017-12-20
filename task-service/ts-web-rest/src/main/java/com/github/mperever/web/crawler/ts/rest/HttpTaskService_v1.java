@@ -1,13 +1,14 @@
 package com.github.mperever.web.crawler.ts.rest;
 
+import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
+import com.github.mperever.web.crawler.common.json.JsonSerializer;
+
 import com.github.mperever.web.crawler.ts.common.TaskService_v1;
 import com.github.mperever.web.crawler.ts.common.dto.ErrorKeeper;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
-import com.github.mperever.web.crawler.ts.common.json.JacksonJsonSerializer;
-import com.github.mperever.web.crawler.ts.common.json.JsonSerializer;
 import com.github.mperever.web.crawler.ts.dal.mysql.TaskServiceRepositoryMySql;
 
 import javax.ws.rs.Consumes;

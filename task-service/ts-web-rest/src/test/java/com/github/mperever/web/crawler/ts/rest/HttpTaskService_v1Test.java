@@ -1,12 +1,13 @@
 package com.github.mperever.web.crawler.ts.rest;
 
+import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
+
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.common.dto.TaskResults;
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
-import com.github.mperever.web.crawler.ts.common.json.JacksonJsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +30,6 @@ import org.glassfish.jersey.test.JerseyTestNg;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 public class HttpTaskService_v1Test extends JerseyTestNg.ContainerPerClassTest
 {

@@ -6,18 +6,38 @@
 
     <parent>
         <groupId>com.github.mperever.web.crawler</groupId>
-        <artifactId>task-service-all</artifactId>
+        <artifactId>web-crawler-all</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <description>Common task service module is used by server component and clients</description>
-    <artifactId>ts-common</artifactId>
+    <description>Common module for services</description>
+    <artifactId>common-service</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
+        </dependency>
+        <!--JSON serializer-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <!--Logging-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
     </dependencies>
 

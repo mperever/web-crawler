@@ -1,7 +1,7 @@
-package com.github.mperever.web.crawler.ts.common.json;
+package com.github.mperever.web.crawler.ts.common.dto;
 
-import com.github.mperever.web.crawler.ts.common.dto.TaskResults;
-import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
+import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
+import com.github.mperever.web.crawler.common.json.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class JacksonJsonSerializerTest
+public class TaskServiceDtoSerializationTest
 {
-    private final JacksonJsonSerializer serializer = new JacksonJsonSerializer();
+    private final JsonSerializer serializer = new JacksonJsonSerializer();
 
     @Test
     public void urlTask_serialize()

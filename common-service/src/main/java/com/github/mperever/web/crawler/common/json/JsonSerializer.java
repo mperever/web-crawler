@@ -1,4 +1,4 @@
-package com.github.mperever.web.crawler.ts.common.json;
+package com.github.mperever.web.crawler.common.json;
 
 import java.io.Serializable;
 
