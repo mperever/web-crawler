@@ -1,9 +1,6 @@
 package com.github.mperever.web.crawler.ts.rest;
 
 import com.github.mperever.web.crawler.ts.common.TaskService_v1;
-import com.github.mperever.web.crawler.ts.common.dal.TaskPageTextStats;
-import com.github.mperever.web.crawler.ts.common.dal.TaskResultEntities;
-import com.github.mperever.web.crawler.ts.common.dal.TaskServiceRepository;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
@@ -11,11 +8,15 @@ import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.common.dto.TaskResults;
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
 import com.github.mperever.web.crawler.common.ArgumentsValidator;
+import com.github.mperever.web.crawler.ts.dal.TaskPageTextStats;
+import com.github.mperever.web.crawler.ts.dal.TaskResultEntities;
+import com.github.mperever.web.crawler.ts.dal.TaskServiceRepository;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -78,7 +79,8 @@ public class TaskService_v1Impl implements TaskService_v1
     }
 
     @Override
-    public SaveTaskResultResponse saveTaskResults( final SaveTaskResultRequest request ) throws IllegalArgumentException
+    public SaveTaskResultResponse saveTaskResults( final SaveTaskResultRequest request )
+            throws IllegalArgumentException, NoSuchElementException
     {
         checkSaveResultRequest( request );
 
@@ -88,7 +90,7 @@ public class TaskService_v1Impl implements TaskService_v1
             final UrlTask task = repository.getTask( url );
             if ( task == null )
             {
-                throw new IllegalArgumentException( "Could not find task by url: " + url );
+                throw new NoSuchElementException( "Could not find task by url: " + url );
             }
 
             final SaveTaskResultResponse successResponse = new SaveTaskResultResponse();

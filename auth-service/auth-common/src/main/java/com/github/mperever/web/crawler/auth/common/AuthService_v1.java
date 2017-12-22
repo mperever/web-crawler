@@ -1,9 +1,9 @@
-package com.github.mperever.web.crawler.auth.rest;
+package com.github.mperever.web.crawler.auth.common;
 
-import com.github.mperever.web.crawler.common.auth.Credentials;
-import com.github.mperever.web.crawler.common.auth.Role;
-import com.github.mperever.web.crawler.common.auth.User;
-import com.github.mperever.web.crawler.common.auth.UserInfo;
+import com.github.mperever.web.crawler.auth.common.dto.Credentials;
+import com.github.mperever.web.crawler.auth.common.dto.Role;
+import com.github.mperever.web.crawler.auth.common.dto.User;
+import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
 
 import java.security.AccessControlException;
 import java.util.List;
@@ -50,7 +50,7 @@ public interface AuthService_v1
      * @throws AuthenticationException if security token is not valid
      * @throws AccessControlException if user does not allow to perform this operation
      */
-    List<UserInfo> readUsers( String securityToken )
+    List<UserInfo > readUsers( String securityToken )
             throws IllegalArgumentException, AuthenticationException, AccessControlException;
 
     /**

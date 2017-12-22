@@ -3,8 +3,8 @@ package com.github.mperever.web.crawler.common.json;
 import java.io.Serializable;
 
 /**
- * Represents interface for json serialization.
- * The interface is used by task service clients and server
+ * Represents facade interface for json serialization.
+ * The interface is used by services and clients
  *
  * @author mperever
  */

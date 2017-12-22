@@ -1,31 +1,41 @@
-package com.github.mperever.web.crawler.common.auth;
+package com.github.mperever.web.crawler.auth.common;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.crypto.MacProvider;
 
-import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
-import com.github.mperever.web.crawler.common.json.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
 
-import java.io.Serializable;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents facade to create and parse signed Java Web token as part of authorisation process.
+ *
+ * @author mperever
+ */
 public class Jwt
 {
     private static final Logger logger = LoggerFactory.getLogger( Jwt.class );
 
-    private static final String SECRET_KEY_PROPERTY_NAME = "secretKey";
+    static final String SECRET_KEY_PROPERTY_NAME = "secretKey";
+    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
     private static final String USER_CLAIM_NAME = "user";
 
     private final String secretKey;
     private final JwtParser tokenParser;
-    private final JsonSerializer serializer = new JacksonJsonSerializer();
+
+    private final ObjectMapper jacksonMapper = new ObjectMapper();
 
     public Jwt( String secretKey )
     {
@@ -48,6 +58,21 @@ public class Jwt
         return secretKey;
     }
 
+    public static String generateSecretKey()
+    {
+        final Key secret = MacProvider.generateKey( SIGNATURE_ALGORITHM );
+        final byte[] secretBytes = secret.getEncoded();
+        return Base64.getEncoder().encodeToString( secretBytes );
+    }
+
+    /**
+     * Creates signed java web token for specified user information.
+     *
+     * @param user The user information as a part of token
+     * @param issuer The value of token issuer
+     * @param expirationDate The date when token considered as expired
+     * @return java web token
+     */
     public String create( UserInfo user, String issuer, Date expirationDate )
     {
         final JwtBuilder tokenBuilder = Jwts.builder()
@@ -62,11 +87,16 @@ public class Jwt
                     .setIssuedAt( new Date() );
         }
         return tokenBuilder
-                .signWith( SignatureAlgorithm.HS256, secretKey )
+                .signWith( SIGNATURE_ALGORITHM, secretKey )
                 .compact();
     }
 
-    // TODO: JavaDoc. Returns null if the token is invalid or {@link UserInfo} can not be parsed from the token.
+    /**
+     * Parses token to get {@link UserInfo}.
+     *
+     * @param token The token to parse
+     * @return user information object or returns null if the token is invalid.
+     */
     public UserInfo parseUserInfo( String token )
     {
         try
@@ -75,10 +105,10 @@ public class Jwt
             logger.debug( bodyClaims.toString() );
 
             // workaround to get UserInfo object from JWT body claim.
-            final Serializable userMap = ( Serializable )bodyClaims.get( USER_CLAIM_NAME );
-            if ( userMap != null )
+            final Object userMap = bodyClaims.get( USER_CLAIM_NAME );
+            if ( userMap != null && userMap instanceof LinkedHashMap )
             {
-                return serializer.decode( serializer.encode( userMap ), UserInfo.class );
+                return jacksonMapper.convertValue( userMap, UserInfo.class );
             }
 
         } catch ( Exception ex )

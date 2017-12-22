@@ -11,6 +11,8 @@ import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.dal.mysql.TaskServiceRepositoryMySql;
 
+import java.util.NoSuchElementException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -121,6 +123,10 @@ public class HttpTaskService_v1
         if ( errorType.equals( IllegalArgumentException.class ) )
         {
             return Response.Status.BAD_REQUEST;
+        }
+        if ( errorType.equals( NoSuchElementException.class ) )
+        {
+            return Response.Status.NOT_FOUND;
         }
 
         return Response.Status.INTERNAL_SERVER_ERROR;

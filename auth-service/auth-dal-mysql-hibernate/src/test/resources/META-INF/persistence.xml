@@ -8,16 +8,14 @@
         <!-- Persistence provider -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!--Entity XML mappings-->
-        <mapping-file>META-INF/urlTask_mapping.xml</mapping-file>
-        <mapping-file>META-INF/pageStats_mapping.xml</mapping-file>
+        <mapping-file>META-INF/user_mapping.xml</mapping-file>
         <!-- Entity classes -->
-        <class>com.github.mperever.web.crawler.ts.common.dto.UrlTask</class>
-        <class>com.github.mperever.web.crawler.ts.dal.TaskPageTextStats</class>
+        <class>com.github.mperever.web.crawler.auth.common.dto.User</class>
         <!-- The JDBC driver and database -->
         <properties>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.connection.url" value="jdbc:h2:mem:taskService"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:mem:authService"/>
             <property name="hibernate.connection.username" value="sa"/>
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.hbm2ddl.auto" value="create" />

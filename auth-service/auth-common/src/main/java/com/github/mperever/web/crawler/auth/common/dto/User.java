@@ -1,4 +1,4 @@
-package com.github.mperever.web.crawler.common.auth;
+package com.github.mperever.web.crawler.auth.common.dto;
 
 import java.io.Serializable;
 
@@ -42,5 +42,11 @@ public class User implements Serializable
     public Role getRole()
     {
         return role;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format( "[ %s, %s, %s ]", name, role, password );
     }
 }

@@ -1,4 +1,4 @@
-package com.github.mperever.web.crawler.ts.common.dal;
+package com.github.mperever.web.crawler.ts.dal;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

@@ -1,9 +1,10 @@
 package com.github.mperever.web.crawler.ts.dal.mysql;
 
-import com.github.mperever.web.crawler.ts.common.dal.TaskPageTextStats;
-import com.github.mperever.web.crawler.ts.common.dal.TaskResultEntities;
-import com.github.mperever.web.crawler.ts.common.dal.TaskServiceRepository;
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
+
+import com.github.mperever.web.crawler.ts.dal.TaskPageTextStats;
+import com.github.mperever.web.crawler.ts.dal.TaskResultEntities;
+import com.github.mperever.web.crawler.ts.dal.TaskServiceRepository;
 
 import com.github.mperever.web.crawler.ts.dal.mysql.internal.EntityManagerFactoryHolder;
 import com.github.mperever.web.crawler.ts.dal.mysql.internal.EntityManagerQuery;

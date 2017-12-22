@@ -1,4 +1,4 @@
-package com.github.mperever.web.crawler.common.auth;
+package com.github.mperever.web.crawler.auth.common.dto;
 
 import java.io.Serializable;
 

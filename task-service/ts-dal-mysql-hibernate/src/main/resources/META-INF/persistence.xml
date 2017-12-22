@@ -12,7 +12,7 @@
         <mapping-file>META-INF/pageStats_mapping.xml</mapping-file>
         <!-- Entity classes -->
         <class>com.github.mperever.web.crawler.ts.common.dto.UrlTask</class>
-        <class>com.github.mperever.web.crawler.ts.common.dal.TaskPageTextStats</class>
+        <class>com.github.mperever.web.crawler.ts.dal.TaskPageTextStats</class>
         <!-- The JDBC driver and database -->
         <properties>
             <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>

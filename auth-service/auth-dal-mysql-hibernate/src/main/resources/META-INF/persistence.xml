@@ -4,23 +4,21 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="hibernateH2" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="hibernateMySql" transaction-type="RESOURCE_LOCAL">
         <!-- Persistence provider -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!--Entity XML mappings-->
-        <mapping-file>META-INF/urlTask_mapping.xml</mapping-file>
-        <mapping-file>META-INF/pageStats_mapping.xml</mapping-file>
+        <mapping-file>META-INF/user_mapping.xml</mapping-file>
         <!-- Entity classes -->
-        <class>com.github.mperever.web.crawler.ts.common.dto.UrlTask</class>
-        <class>com.github.mperever.web.crawler.ts.dal.TaskPageTextStats</class>
+        <class>com.github.mperever.web.crawler.auth.common.dto.User</class>
         <!-- The JDBC driver and database -->
         <properties>
-            <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.connection.url" value="jdbc:h2:mem:taskService"/>
-            <property name="hibernate.connection.username" value="sa"/>
-            <property name="hibernate.connection.password" value=""/>
-            <property name="hibernate.hbm2ddl.auto" value="create" />
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/authService?createDatabaseIfNotExist=true&amp;serverTimezone=UTC"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.connection.password" value="admin"/>
+            <property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments" value="true"/>

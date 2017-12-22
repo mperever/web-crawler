@@ -1,8 +1,11 @@
 package com.github.mperever.web.crawler.auth.rest;
 
-import com.github.mperever.web.crawler.common.auth.Credentials;
-import com.github.mperever.web.crawler.common.auth.User;
-import com.github.mperever.web.crawler.common.auth.UserInfo;
+import com.github.mperever.web.crawler.auth.common.AuthService_v1;
+import com.github.mperever.web.crawler.auth.common.dto.Credentials;
+import com.github.mperever.web.crawler.auth.common.dto.User;
+import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
+
+import com.github.mperever.web.crawler.auth.dal.mysql.AuthServiceRepositoryMySql;
 
 import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
 import com.github.mperever.web.crawler.common.json.JsonSerializer;
@@ -64,10 +67,10 @@ public class HttpAuthService_v1
         jsonSerializer = new JacksonJsonSerializer();
     }
 
-//    public HttpAuthService_v1()
-//    {
-//        this( new AuthService_v1Impl() );
-//    }
+    public HttpAuthService_v1()
+    {
+        this( new AuthService_v1Impl() );
+    }
 
     @POST
     @Path( AUTHENTICATE_PATH )

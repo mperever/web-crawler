@@ -5,6 +5,8 @@ import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 
+import java.util.NoSuchElementException;
+
 /**
  * Represents interface for high level API of task service version 1.
  *
@@ -27,6 +29,8 @@ public interface TaskService_v1
      * @param request The request from client to save task results.
      * @return Response with result of task saving.
      * @throws IllegalArgumentException if request parameters are not valid
+     * @throws NoSuchElementException if task does not exist
      */
-    SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request ) throws IllegalArgumentException;
+    SaveTaskResultResponse saveTaskResults( SaveTaskResultRequest request )
+            throws IllegalArgumentException, NoSuchElementException;
 }
