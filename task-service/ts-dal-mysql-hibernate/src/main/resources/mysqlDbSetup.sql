@@ -17,14 +17,14 @@ CREATE TABLE Tasks
 ALTER TABLE Tasks CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE PageText
-( taskId INT NOT NULL,
+( task_id INT NOT NULL,
   text VARCHAR(20000) NOT NULL,
-  PRIMARY KEY (taskId) );
+  PRIMARY KEY (task_id) );
 ALTER TABLE PageText CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE WordStats
-( taskId INT NOT NULL,
+( task_id INT NOT NULL,
   word VARCHAR(255),
   count LONG,
-  PRIMARY KEY (taskId) );
+  PRIMARY KEY (task_id) );
 ALTER TABLE WordStats CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;

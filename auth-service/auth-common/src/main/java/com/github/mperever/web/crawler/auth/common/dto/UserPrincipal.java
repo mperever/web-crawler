@@ -1,13 +1,14 @@
 package com.github.mperever.web.crawler.auth.common.dto;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 /**
- *  Represents user information without sensitive data (password).
+ *  Represents user name and role.
  *
  * @author mperever
  */
-public class UserInfo implements Serializable
+public class UserPrincipal implements Principal, Serializable
 {
     private static final long serialVersionUID = 1L;
 
@@ -17,11 +18,11 @@ public class UserInfo implements Serializable
     /**
      *  This constructor is added as prerequisite for serialization.
      */
-    private UserInfo()
+    private UserPrincipal()
     {
     }
 
-    public UserInfo( String name, Role role )
+    public UserPrincipal( String name, Role role )
     {
         this.name = name;
         this.role = role;

@@ -29,10 +29,11 @@ public interface AuthServiceRepository
     /**
      * Gets added users.
      *
-     * @param maxCount The maximum count of user to find
+     * @param offset position of the first result, numbered from 0
+     * @param limit  maximum number of users to get, greater than 0
      * @return list of users
      */
-    List<User> getUsers( int maxCount );
+    List<User> getUsers( int offset, int limit );
 
     /**
      * Updates user data.

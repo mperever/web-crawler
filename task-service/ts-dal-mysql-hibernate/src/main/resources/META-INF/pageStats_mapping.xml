@@ -4,10 +4,12 @@
                  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
                  http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
                  version="2.1">
-    <entity class="com.github.mperever.web.crawler.ts.dal.TaskPageTextStats" name="TaskPageTextStats">
+    <entity class="com.github.mperever.web.crawler.ts.dal.TaskPageTextStats" name="PageText">
         <table name="PageText"/>
         <attributes>
-            <id name="taskId"/>
+            <id name="taskId">
+                <column name="task_id"/>
+            </id>
 
             <basic name="pageText">
                 <column name="text" length="20000" nullable="false"/>

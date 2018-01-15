@@ -3,17 +3,13 @@ package com.github.mperever.web.crawler.auth.rest;
 import com.github.mperever.web.crawler.auth.common.AuthService_v1;
 import com.github.mperever.web.crawler.auth.common.dto.Credentials;
 import com.github.mperever.web.crawler.auth.common.dto.User;
-import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
-
+import com.github.mperever.web.crawler.auth.common.dto.UserPrincipal;
 import com.github.mperever.web.crawler.auth.dal.mysql.AuthServiceRepositoryMySql;
-
 import com.github.mperever.web.crawler.common.json.JacksonJsonSerializer;
-import com.github.mperever.web.crawler.common.json.JsonSerializer;
+import com.github.mperever.web.crawler.common.rest.HttpService;
 
-import java.security.AccessControlException;
 import java.util.List;
 
-import javax.security.sasl.AuthenticationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,11 +19,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.github.mperever.web.crawler.auth.rest.HttpAuthService_v1.SERVICE_ROOT_PATH;
 
@@ -38,23 +30,18 @@ import static com.github.mperever.web.crawler.auth.rest.HttpAuthService_v1.SERVI
  * @author mperever
  */
 @Path( SERVICE_ROOT_PATH )
-public class HttpAuthService_v1
+public class HttpAuthService_v1 extends HttpService
 {
     static final String SERVICE_ROOT_PATH = "/v1";
 
-    private static final String RESOURCE_MEDIA_TYPE = MediaType.APPLICATION_JSON;
     private static final String AUTHENTICATE_PATH = "authenticate";
     private static final String CREATE_NEW_USER_PATH = "createUser";
     private static final String READ_USERS_PATH = "readUsers";
     private static final String UPDATE_USER_PATH = "updateUser";
     private static final String DELETE_USER_PATH = "deleteUser";
-    private static final String SECURITY_TOKEN_HEADER_PARAM = "security-token";
     private static final String  USER_NAME_QUERY_PARAM = "userName";
 
-    private static final Logger logger = LoggerFactory.getLogger( HttpAuthService_v1.class );
-
     private final AuthService_v1 authService;
-    private final JsonSerializer jsonSerializer;
 
     /**
      * This constructor should be used only for testing purposes.
@@ -63,8 +50,8 @@ public class HttpAuthService_v1
      */
     HttpAuthService_v1( AuthService_v1 authService )
     {
+        super( new JacksonJsonSerializer() );
         this.authService = authService;
-        jsonSerializer = new JacksonJsonSerializer();
     }
 
     public HttpAuthService_v1()
@@ -113,10 +100,12 @@ public class HttpAuthService_v1
     {
         try
         {
-            final List<UserInfo> users = authService.readUsers( securityToken );
-            final String jsonResponse = jsonSerializer.encode( users.toArray( new UserInfo[ users.size() ] ) );
+            final List<UserPrincipal> users = authService.readUsers( securityToken );
 
-            return Response.ok( jsonResponse, RESOURCE_MEDIA_TYPE ).build();
+            final String readUsersResponsePayload = getJsonSerializer()
+                    .encode( users.toArray( new UserPrincipal[ users.size() ] ) );
+
+            return Response.ok( readUsersResponsePayload, RESOURCE_MEDIA_TYPE ).build();
         }
         catch ( Exception ex )
         {
@@ -156,38 +145,5 @@ public class HttpAuthService_v1
         {
             return buildExceptionResponse( ex );
         }
-    }
-
-    private Response buildExceptionResponse( final Exception error )
-    {
-        logger.error( error.getMessage(), error );
-
-        final String jsonResponse = jsonSerializer.encode( error );
-
-        return Response.status( getErrorResponseStatus( error ) )
-                .type( RESOURCE_MEDIA_TYPE )
-                .entity( jsonResponse )
-                .build();
-    }
-
-    private Response.Status getErrorResponseStatus( final Exception error )
-    {
-        final Class errorType = error.getClass();
-        if ( errorType.equals( IllegalArgumentException.class ) )
-        {
-            return Response.Status.BAD_REQUEST;
-        }
-
-        if ( errorType.equals( AuthenticationException.class ) )
-        {
-            return Response.Status.UNAUTHORIZED;
-        }
-
-        if ( errorType.equals( AccessControlException.class ) )
-        {
-            return Response.Status.FORBIDDEN;
-        }
-
-        return Response.Status.INTERNAL_SERVER_ERROR;
     }
 }

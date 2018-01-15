@@ -62,7 +62,7 @@ public class TaskService_v1Impl implements TaskService_v1
 
         try
         {
-            final UrlTask[] tasks = repository.getTasksForClient(
+            final UrlTask[] tasks = repository.assignTasksToClient(
                     request.getClientId(),
                     request.getMaxCount(),
                     request.getDepthLimit(),
@@ -118,9 +118,44 @@ public class TaskService_v1Impl implements TaskService_v1
 
         } catch ( Exception ex )
         {
-            logger.error(  ex.getMessage(), ex );
+            logger.error( ex.getMessage(), ex );
             return new SaveTaskResultResponse( ex );
         }
+    }
+
+    @Override
+    public void addTask( final UrlTask task ) throws IllegalArgumentException
+    {
+        checkUrlTaskArgument( task );
+
+        repository.addIfNotExist( task );
+    }
+
+    @Override
+    public List<UrlTask> getTasks( int offset, int limit ) throws IllegalArgumentException
+    {
+        checkOffsetAndLimit( offset, limit );
+        
+        return repository.getTasks( offset, limit );
+    }
+
+    private static void checkOffsetAndLimit( int offset, int limit )
+    {
+        final ArgumentsValidator validator = new ArgumentsValidator()
+                .numberNotNegative( offset, "offset" )
+                .numberPositive( limit, "limit" );
+        checkArguments( validator );
+    }
+
+    private  static void checkUrlTaskArgument( UrlTask task )
+    {
+        if ( task == null )
+        {
+            throw new IllegalArgumentException( "Task is not specified" );
+        }
+        final ArgumentsValidator taskValidator = new ArgumentsValidator()
+                .notEmpty( task.getUrl(), "url" );
+        checkArguments( taskValidator );
     }
 
     private void saveTaskResults( final UrlTask task, final TaskResults results )
@@ -185,7 +220,7 @@ public class TaskService_v1Impl implements TaskService_v1
                 .numberPositive( request.getMaxCount(), "maxCount" )
                 .numberNotNegative( request.getDepthLimit(), "depthLimit" );
 
-        checkRequestArguments( requestValidator );
+        checkArguments( requestValidator );
     }
 
     private static void checkSaveResultRequest( final SaveTaskResultRequest request ) throws IllegalArgumentException
@@ -204,10 +239,10 @@ public class TaskService_v1Impl implements TaskService_v1
             requestValidator.notNull( request.getTaskResults(), "taskResults" );
         }
 
-        checkRequestArguments( requestValidator );
+        checkArguments( requestValidator );
     }
 
-    private static void checkRequestArguments( final ArgumentsValidator validator ) throws IllegalArgumentException
+    private static void checkArguments( final ArgumentsValidator validator ) throws IllegalArgumentException
     {
         final String errorMessage = String.join( ", ", validator.validate() );
         if ( !errorMessage.isEmpty() )

@@ -16,7 +16,8 @@
             </basic>
 
             <basic name="role">
-                <enumerated>ORDINAL</enumerated>
+                <column length="50" nullable="false"/>
+                <enumerated>STRING</enumerated>
             </basic>
         </attributes>
     </entity>

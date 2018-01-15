@@ -66,12 +66,12 @@ public class AuthServiceRepositoryMySql implements AuthServiceRepository
     }
 
     @Override
-    public List<User> getUsers( int maxCount )
+    public List<User> getUsers( int offset, int limit )
     {
-        return this.executeQueriesResult( entityManager -> getUsers( entityManager, maxCount ) );
+        return this.executeQueriesResult( entityManager -> getUsers( entityManager, offset, limit ) );
     }
 
-    private List<User> getUsers( final EntityManager entityManager, int maxCount )
+    private List<User> getUsers( final EntityManager entityManager, int offset, int limit )
     {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<User> selectCriteria = builder.createQuery( User.class );
@@ -80,8 +80,8 @@ public class AuthServiceRepositoryMySql implements AuthServiceRepository
         selectCriteria.select( usersRoot );
 
         return entityManager.createQuery( selectCriteria )
-                .setFirstResult( 0 )
-                .setMaxResults( maxCount )
+                .setFirstResult( offset )
+                .setMaxResults( limit )
                 .getResultList();
     }
 

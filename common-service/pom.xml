@@ -26,6 +26,12 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- JAX-RS dependencies -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>${jax-rs.version}</version>
+        </dependency>
         <!--Logging-->
         <dependency>
             <groupId>org.slf4j</groupId>

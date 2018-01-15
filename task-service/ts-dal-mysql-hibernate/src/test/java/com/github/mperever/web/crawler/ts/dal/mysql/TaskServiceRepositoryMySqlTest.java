@@ -6,6 +6,7 @@ import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -70,7 +71,7 @@ public class TaskServiceRepositoryMySqlTest
 
         repo.addIfNotExist( childTask3, childTask4, childTask5, childTask6, childTask7, childTask8 );
 
-        final UrlTask[] actualTasks = repo.getTasksForClient(
+        final UrlTask[] actualTasks = repo.assignTasksToClient(
                 clientId,
                 maxCount,
                 depthLimit,
@@ -199,5 +200,25 @@ public class TaskServiceRepositoryMySqlTest
         final UrlTask actualChildTask2 = repo.getTask( childUrl2 );
         Assert.assertEquals( actualChildTask1, childTask1 );
         Assert.assertEquals( actualChildTask2, childTask2 );
+    }
+
+    @Test ( priority = 1 )
+    public void get_tasks_limit()
+    {
+        final int limit = 1;
+        final String url = UUID.randomUUID().toString();
+        final UrlTask notExistedTask = new UrlTask( null, url, 0, true );
+        repo.addIfNotExist( notExistedTask );
+
+        final List<UrlTask> actualTasks = repo.getTasks( 0, limit );
+        Assert.assertEquals( actualTasks.size(), limit );
+    }
+
+    @Test ( priority = 1 )
+    public void get_tasks_limit_empty()
+    {
+        final int limit = 0;
+        final List<UrlTask> actualTasks = repo.getTasks( 0, 0 );
+        Assert.assertEquals( actualTasks.size(), limit );
     }
 }

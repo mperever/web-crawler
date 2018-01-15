@@ -2,6 +2,8 @@ package com.github.mperever.web.crawler.ts.dal;
 
 import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
 
+import java.util.List;
+
 /**
  * Represents interface for repository with operations for {@link UrlTask} and task results.
  *
@@ -23,6 +25,15 @@ public interface TaskServiceRepository
      * @return UrlTask object if task is found otherwise returns null.
      */
     UrlTask getTask( String url );
+
+    /**
+     * Gets tasks according to specified parameters.
+     *
+     * @param offset position of the first result, numbered from 0
+     * @param limit  maximum number of tasks to get, greater than 0
+     * @return list of tasks
+     */
+    List<UrlTask> getTasks( int offset, int limit );
 
     /**
      * Updates error count of task.
@@ -63,9 +74,9 @@ public interface TaskServiceRepository
      * @param errorThreshold The error count threshold after that url will not take for processing.
      * @return The free tasks regarding specified criteria
      */
-    UrlTask[] getTasksForClient( String clientId,
-                                 int maxCount,
-                                 int depthLimit,
-                                 long timeOutInMs,
-                                 int errorThreshold );
+    UrlTask[] assignTasksToClient( String clientId,
+                                   int maxCount,
+                                   int depthLimit,
+                                   long timeOutInMs,
+                                   int errorThreshold );
 }

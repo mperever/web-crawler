@@ -1,9 +1,8 @@
 package com.github.mperever.web.crawler.auth.common;
 
 import com.github.mperever.web.crawler.auth.common.dto.Credentials;
-import com.github.mperever.web.crawler.auth.common.dto.Role;
 import com.github.mperever.web.crawler.auth.common.dto.User;
-import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
+import com.github.mperever.web.crawler.auth.common.dto.UserPrincipal;
 
 import java.security.AccessControlException;
 import java.util.List;
@@ -29,7 +28,6 @@ public interface AuthService_v1
 
     /**
      * Creates new user if not exist one.
-     * Only users with role {@link Role#ADMIN} eligible to perform this operation.
      *
      * @param securityToken Security token of admin user
      * @param user New user to create
@@ -41,8 +39,7 @@ public interface AuthService_v1
             throws IllegalArgumentException, AuthenticationException, AccessControlException;
 
     /**
-     * Returns information about all users.
-     * Only users with role {@link Role#ADMIN} eligible to perform this operation.
+     * Gets information about all users.
      *
      * @param securityToken Security token of admin user
      * @return all users
@@ -50,12 +47,11 @@ public interface AuthService_v1
      * @throws AuthenticationException if security token is not valid
      * @throws AccessControlException if user does not allow to perform this operation
      */
-    List<UserInfo > readUsers( String securityToken )
+    List<UserPrincipal> readUsers( String securityToken )
             throws IllegalArgumentException, AuthenticationException, AccessControlException;
 
     /**
      * Updates the specified user.
-     * Only users with role {@link Role#ADMIN} eligible to perform this operation.
      *
      * @param securityToken Security token of admin user
      * @param user The user to update
@@ -68,7 +64,6 @@ public interface AuthService_v1
 
     /**
      * Deletes user with specified user name.
-     * Only users with role {@link Role#ADMIN} eligible to perform this operation.
      *
      * @param securityToken Security token of admin user
      * @param userName The user name to find user and delete

@@ -8,9 +8,11 @@ import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksRequest;
 import com.github.mperever.web.crawler.ts.common.dto.RetrieveTasksResponse;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultRequest;
 import com.github.mperever.web.crawler.ts.common.dto.SaveTaskResultResponse;
+import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -23,13 +25,13 @@ import org.slf4j.LoggerFactory;
  * Represents implementation for {@link TaskService_v1}.
  * This implementation sends http requests to task service using {@link HttpClient}.
  */
-public class HttpTaskService_v1 implements TaskService_v1, AutoCloseable
+public class HttpTaskServiceClient implements TaskService_v1, AutoCloseable
 {
-    private static final Logger logger = LoggerFactory.getLogger( HttpTaskService_v1.class );
+    private static final Logger logger = LoggerFactory.getLogger( HttpTaskServiceClient.class );
 
+    private static final String CONTENT_TYPE = "application/json";
     private static final String RETRIEVE_TASKS_PATH = "/tasks.retrieve";
     private static final String SAVE_TASK_RESULTS_PATH = "/results.save";
-    private static final String CONTENT_TYPE = "application/json";
     private static final int OK = 200;
 
     private final JsonSerializer serializer = new JacksonJsonSerializer();
@@ -40,11 +42,23 @@ public class HttpTaskService_v1 implements TaskService_v1, AutoCloseable
 
     private boolean isStarted;
 
-    public HttpTaskService_v1( String taskServiceUrl )
+    public HttpTaskServiceClient( String taskServiceUrl )
     {
         httpClient.setFollowRedirects( false );
         retrieveTasksUrl = taskServiceUrl + RETRIEVE_TASKS_PATH;
         saveTaskResultsUrl = taskServiceUrl + SAVE_TASK_RESULTS_PATH;
+    }
+
+    @Override
+    public void addTask( final UrlTask task ) throws IllegalArgumentException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<UrlTask> getTasks( int offset, int limit ) throws IllegalArgumentException
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override

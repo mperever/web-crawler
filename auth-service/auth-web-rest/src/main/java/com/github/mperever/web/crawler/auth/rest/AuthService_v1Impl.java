@@ -6,7 +6,7 @@ import com.github.mperever.web.crawler.auth.dal.AuthServiceRepository;
 import com.github.mperever.web.crawler.auth.common.dto.Credentials;
 import com.github.mperever.web.crawler.auth.common.dto.Role;
 import com.github.mperever.web.crawler.auth.common.dto.User;
-import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
+import com.github.mperever.web.crawler.auth.common.dto.UserPrincipal;
 import com.github.mperever.web.crawler.auth.common.utils.DigestUtils;
 import com.github.mperever.web.crawler.auth.dal.mysql.AuthServiceRepositoryMySql;
 
@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.security.sasl.AuthenticationException;
+
+
+// TODO: Add unit tests for service
 
 /**
  * Represents implementation for {@link AuthService_v1}.
@@ -57,11 +60,11 @@ public class AuthService_v1Impl implements AuthService_v1
     {
         checkCredentialsNotEmpty( credentials );
 
-        final UserInfo userInfo = authenticateUser( credentials );
+        final UserPrincipal userPrincipal = authenticateUser( credentials );
 
         final String issuer = mxBean.getName();
         final Date expirationDate = calcJwtExpirationDate();
-        return jwt.create( userInfo, issuer, expirationDate );
+        return jwt.create( userPrincipal, issuer, expirationDate );
     }
 
     private static void checkCredentialsNotEmpty( final Credentials credentials )
@@ -83,7 +86,7 @@ public class AuthService_v1Impl implements AuthService_v1
         }
     }
 
-    private UserInfo authenticateUser( final Credentials credentials ) throws AuthenticationException
+    private UserPrincipal authenticateUser( final Credentials credentials ) throws AuthenticationException
     {
         final String userName = credentials.getUserName();
         final User user = repository.getUserByName( userName );
@@ -106,7 +109,7 @@ public class AuthService_v1Impl implements AuthService_v1
             throw new AuthenticationException( "An internal error occurred during credentials validation", ex );
         }
 
-        return new UserInfo( user.getName(), user.getRole() );
+        return new UserPrincipal( user.getName(), user.getRole() );
     }
 
     private static boolean isCredentialsValid( final Credentials credentials, User user ) throws NoSuchAlgorithmException
@@ -127,8 +130,6 @@ public class AuthService_v1Impl implements AuthService_v1
         return tomorrow;
     }
 
-    // TODO: Check input parameters (IllegalArgumentException)
-
     @Override
     public void createUser( String securityToken, User user )
             throws IllegalArgumentException, AuthenticationException, AccessControlException
@@ -141,13 +142,13 @@ public class AuthService_v1Impl implements AuthService_v1
     }
 
     @Override
-    public List<UserInfo> readUsers( String securityToken )
+    public List<UserPrincipal> readUsers( String securityToken )
             throws IllegalArgumentException, AuthenticationException, AccessControlException
     {
         checkAdminRole( securityToken );
 
-        return repository.getUsers( Integer.MAX_VALUE ).stream()
-                .map( user -> new UserInfo( user.getName(), user.getRole() ) )
+        return repository.getUsers( 0, Integer.MAX_VALUE ).stream()
+                .map( user -> new UserPrincipal( user.getName(), user.getRole() ) )
                 .collect( Collectors.toList() );
     }
 
@@ -175,15 +176,15 @@ public class AuthService_v1Impl implements AuthService_v1
 
     private void checkAdminRole( String token ) throws AuthenticationException, AccessControlException
     {
-        final UserInfo userInfo = jwt.parseUserInfo( token );
-        if ( userInfo == null )
+        final UserPrincipal userPrincipal = jwt.parseUserPrincipal( token );
+        if ( userPrincipal == null )
         {
             throw new AuthenticationException( "Token is not valid" );
         }
 
-        if ( userInfo.getRole() != Role.ADMIN )
+        if ( userPrincipal.getRole() != Role.ADMIN )
         {
-            throw new AccessControlException( String.format( "User '%s' does not have permissions to perform this operation", userInfo.getName() ) );
+            throw new AccessControlException( String.format( "User '%s' does not have permissions to perform this operation", userPrincipal.getName() ) );
         }
     }
 

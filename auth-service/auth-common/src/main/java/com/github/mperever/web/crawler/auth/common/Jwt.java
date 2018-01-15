@@ -1,14 +1,14 @@
 package com.github.mperever.web.crawler.auth.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mperever.web.crawler.auth.common.dto.UserPrincipal;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
 
 import java.security.Key;
 import java.util.Base64;
@@ -66,14 +66,14 @@ public class Jwt
     }
 
     /**
-     * Creates signed java web token for specified user information.
+     * Creates signed java web token for specified user principal.
      *
-     * @param user The user information as a part of token
+     * @param user The user principal as a part of token
      * @param issuer The value of token issuer
      * @param expirationDate The date when token considered as expired
      * @return java web token
      */
-    public String create( UserInfo user, String issuer, Date expirationDate )
+    public String create( UserPrincipal user, String issuer, Date expirationDate )
     {
         final JwtBuilder tokenBuilder = Jwts.builder()
                 .setId( UUID.randomUUID().toString() )
@@ -92,23 +92,23 @@ public class Jwt
     }
 
     /**
-     * Parses token to get {@link UserInfo}.
+     * Parses token to get {@link UserPrincipal}.
      *
      * @param token The token to parse
-     * @return user information object or returns null if the token is invalid.
+     * @return user principal object or returns null if the token is invalid.
      */
-    public UserInfo parseUserInfo( String token )
+    public UserPrincipal parseUserPrincipal( String token )
     {
         try
         {
             final Claims bodyClaims = tokenParser.parseClaimsJws( token ).getBody();
             logger.debug( bodyClaims.toString() );
 
-            // workaround to get UserInfo object from JWT body claim.
+            // workaround to get UserPrincipal object from JWT body claim.
             final Object userMap = bodyClaims.get( USER_CLAIM_NAME );
             if ( userMap != null && userMap instanceof LinkedHashMap )
             {
-                return jacksonMapper.convertValue( userMap, UserInfo.class );
+                return jacksonMapper.convertValue( userMap, UserPrincipal.class );
             }
 
         } catch ( Exception ex )

@@ -89,7 +89,6 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
         }
         final Predicate byOrUrls = builder.or( byUrls.toArray( new Predicate[ byUrls.size() ] ) );
 
-        // Create and run query based on search selectCriteria
         selectCriteria.select( tasksRoot )
                 .where( byOrUrls );
         final TypedQuery<UrlTask> query = entityManager.createQuery( selectCriteria );
@@ -150,7 +149,6 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
         final Root<UrlTask> tasksRoot = updateCriteria.from( UrlTask.class );
         final Predicate byId = builder.equal( tasksRoot.get( UrlTask_.id ), id );
 
-        // Create and run query based on search criteria
         updateCriteria.set( UrlTask_.endProcessTime, endTime )
                 .where( byId );
 
@@ -200,7 +198,6 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
         // Create expression for where clause to find task by url value
         final Predicate byUrl = builder.equal( tasksRoot.get( UrlTask_.url ), url );
 
-        // Create and run query based on search selectCriteria
         selectCriteria.select( tasksRoot )
                 .where( byUrl );
         final TypedQuery<UrlTask> query = entityManager.createQuery( selectCriteria );
@@ -210,11 +207,31 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
     }
 
     @Override
-    public UrlTask[] getTasksForClient( String clientId,
-                                        int maxCount,
-                                        int depthLimit,
-                                        long timeOutInMs,
-                                        int errorThreshold )
+    public List<UrlTask> getTasks( int offset, int limit )
+    {
+        return this.executeQueriesResult( entityManager -> this.getTasks( entityManager, offset, limit ) );
+    }
+
+    private List<UrlTask> getTasks( final EntityManager entityManager, int offset, int limit )
+    {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<UrlTask> criteria = builder.createQuery( UrlTask.class );
+        final Root<UrlTask> tasksRoot = criteria.from( UrlTask.class );
+
+        criteria.select( tasksRoot );
+
+        return entityManager.createQuery( criteria )
+                .setFirstResult( offset )
+                .setMaxResults( limit )
+                .getResultList();
+    }
+
+    @Override
+    public UrlTask[] assignTasksToClient( String clientId,
+                                          int maxCount,
+                                          int depthLimit,
+                                          long timeOutInMs,
+                                          int errorThreshold )
     {
         return this.executeQueriesResult( entityManager ->
                 this.getFreeTasks( entityManager, clientId, maxCount, depthLimit, timeOutInMs, errorThreshold ) );
@@ -239,7 +256,6 @@ public class TaskServiceRepositoryMySql implements TaskServiceRepository
                 timeOutInMs,
                 errorThreshold );
 
-        // Create and run query based on search criteria
         criteria.select( tasksRoot )
                 .where( taskCanBeTaken );
         final TypedQuery<UrlTask> query = entityManager.createQuery( criteria ).setMaxResults( maxCount );

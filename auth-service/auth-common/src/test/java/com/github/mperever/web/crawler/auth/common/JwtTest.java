@@ -1,7 +1,7 @@
 package com.github.mperever.web.crawler.auth.common;
 
 import com.github.mperever.web.crawler.auth.common.dto.Role;
-import com.github.mperever.web.crawler.auth.common.dto.UserInfo;
+import com.github.mperever.web.crawler.auth.common.dto.UserPrincipal;
 
 import java.util.UUID;
 
@@ -12,7 +12,7 @@ import static com.github.mperever.web.crawler.auth.common.Jwt.SECRET_KEY_PROPERT
 
 public class JwtTest
 {
-    private final UserInfo userInfo = new UserInfo( "testUser", Role.ADMIN );
+    private final UserPrincipal userPrincipal = new UserPrincipal( "testUser", Role.ADMIN );
     private final String issuer = UUID.randomUUID().toString();
 
     @Test
@@ -21,7 +21,7 @@ public class JwtTest
         System.setProperty( SECRET_KEY_PROPERTY_NAME, Jwt.generateSecretKey() );
 
         final Jwt jwt = new Jwt();
-        final String token = jwt.create( userInfo, issuer, null );
+        final String token = jwt.create( userPrincipal, issuer, null );
 
         Assert.assertNotNull( token );
     }
@@ -30,11 +30,11 @@ public class JwtTest
     public void create_jwt_and_parse_userInfo()
     {
         final Jwt jwt = new Jwt( Jwt.generateSecretKey() );
-        final String token = jwt.create( userInfo, issuer, null );
+        final String token = jwt.create( userPrincipal, issuer, null );
         Assert.assertNotNull( token );
 
-        final UserInfo parsedUserInfo = jwt.parseUserInfo( token );
-        Assert.assertNotNull( parsedUserInfo );
-        Assert.assertEquals( userInfo.getName(), parsedUserInfo.getName() );
+        final UserPrincipal parsedUserPrincipal = jwt.parseUserPrincipal( token );
+        Assert.assertNotNull( parsedUserPrincipal );
+        Assert.assertEquals( userPrincipal.getName(), parsedUserPrincipal.getName() );
     }
 }

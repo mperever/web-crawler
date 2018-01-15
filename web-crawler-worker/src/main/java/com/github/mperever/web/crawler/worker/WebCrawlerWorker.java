@@ -7,7 +7,7 @@ import com.github.mperever.web.crawler.ts.common.dto.UrlTask;
 import com.github.mperever.web.crawler.worker.internal.reader.BufferedTaskReader;
 import com.github.mperever.web.crawler.worker.internal.reader.BufferedTaskReaderImpl;
 import com.github.mperever.web.crawler.worker.internal.reader.TaskReaderActionImpl;
-import com.github.mperever.web.crawler.worker.http.HttpTaskService_v1;
+import com.github.mperever.web.crawler.worker.http.HttpTaskServiceClient;
 
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.ExecutorService;
@@ -30,13 +30,13 @@ public class WebCrawlerWorker
 
     private final UrlTaskProcessor taskProcessor = new UrlTaskProcessor();
     private final String clientId = ManagementFactory.getRuntimeMXBean().getName();
-    private final HttpTaskService_v1 taskService;
+    private final HttpTaskServiceClient taskService;
     private final BufferedTaskReader taskReader;
     private final ExecutorService taskProcessorExecutor;
 
     WebCrawlerWorker( WorkerParameters parameters )
     {
-        taskService = new HttpTaskService_v1( parameters.taskServiceUrl );
+        taskService = new HttpTaskServiceClient( parameters.taskServiceUrl );
         final TaskReaderActionImpl readerAction = new TaskReaderActionImpl(
                 taskService,
                 clientId,
